@@ -2,14 +2,14 @@ sadmin.framework:CreateCommand(
     "ban",
     {
         desc = "Blocks the player from entering the server for a time.",
+        priority = true,
         args = {
-            player = "Player",
-            time = "Time",
+            time = "Time in seconds",
         }
     },
-    function( executor, args )
-        if #args < 2 then
-            return
-        end
+    function( sender, ply, args )
+        local time = args["time"]
+
+        ply:Ban(time/60, true)
     end
 )

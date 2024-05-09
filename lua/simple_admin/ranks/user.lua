@@ -1,1 +1,1 @@
-sadmin.framework:CreateRank("user")
+sadmin.framework:CreateRank("user", 20)

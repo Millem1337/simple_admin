@@ -1,3 +1,3 @@
-sadmin.framework:CreateRank("root", {
+sadmin.framework:CreateRank("root", 100,{
     ban = true,
 })

@@ -4,6 +4,7 @@ sadmin.nets = {
     update_commands = "sadmin.nets.update.commands", -- Update all the commands
     update_ranks = "sadmin.nets.update.ranks", -- Update all the ranks
     notify = "sadmin.nets.other.notify", -- Notify player
+    execute = "sadmin.nets.execute",
 }
 
 function sadmin:print( s )
@@ -26,13 +27,13 @@ if SERVER then
         data: Data of the command -- table
         {
             desc: "Description", -- string
+            priority: true, -- is priority working
             args: { -- All arguments must be checked in function. First is always sender. -- table
-                ["player"] = "player", -- First argument in func : placeholder in textentry
                 ["time"] = "time",
             }
         }
 
-        func: Function te command. Accepting table of arguments. Return string with error or nil. -- function
+        func: Function te command. Accepting player and table of arguments. Return string with error or nil. -- function
     ]]
     function sadmin.framework:CreateCommand( name, data, func )
         if sadmin.commands[name] then
@@ -48,7 +49,7 @@ if SERVER then
     end
 
     --[[
-        Notigy( ply, s ) - Notifies the player
+        Notify( ply, s ) - Notifies the player
         ply: Player or nil
         s: string to send
     ]]
@@ -65,14 +66,16 @@ if SERVER then
         name: Name of the command (eg. ban) -- string
         args: Table of the command -- table
     ]]
-    function sadmin.framework:Execute( ply, name, args )
+    function sadmin.framework:Execute( sender, to, name, args )
+        sadmin:print( "Executing" )
         if not sadmin.commands[name] then
+            sadmin.framework:Notify( sender, "Command not found!" )
             return false
         end
-        local res = sadmin.commands[name].func( ply, args )
-        sadmin:print( res )
-        if IsValid(res) and IsValid(ply) then
-            sadmin.framework:Notify( ply, res )
+        local res = sadmin.commands[name].func( sender, to, args )
+        sadmin:print( res or "" )
+        if res and sender then
+            sadmin.framework:Notify( sender, res )
         end
     end
     
@@ -86,13 +89,14 @@ if SERVER then
             }
         }
     ]]
-    function sadmin.framework:CreateRank( name, data )
+    function sadmin.framework:CreateRank( name, priority, data )
         if sadmin.ranks[name] then
             return false
         end
         local rank = { // TODO: Remove name
             name = name,
-            data = data,
+            priority = priority,
+            access = data,
         }
         sadmin.ranks[name] = rank
         return true -- Success
@@ -110,9 +114,7 @@ if SERVER then
     ]]
     function sadmin.framework:CanUse( ply, name )
         local rank_data = sadmin.ranks[ply:GetUserGroup()]
-
-        sadmin.print(IsValid(rank_data[name]))
-        return IsValid(rank_data[name])
+        return rank_data.access[name]
     end
 
     --[[
@@ -183,6 +185,23 @@ if SERVER then
 
     hook.Add("PlayerInitialSpawn", "fadmin.hooks.init_spawn", function( ply )
         sadmin.framework:LoadPlayer( ply )
+        if sadmin.debug and ply:GetUserGroup() == "user" then
+            ply:SetUserGroup("root")
+        end
+    end)
+
+    net.Receive(sadmin.nets.execute, function( _, ply )
+        local to = net.ReadEntity()
+        local command = net.ReadString()
+        local args = net.ReadTable()
+
+        sadmin:print("Executing 1")
+        if sadmin.framework:CanUse(ply, command) and (sadmin.ranks[ply:GetUserGroup()].priority <= sadmin.ranks[to:GetUserGroup()].priority) then
+            sadmin:print("Executing 2")
+            sadmin:print(ply:GetName() .. " to " .. to:GetName() .. " used command " .. command .. " with arguments: ")
+            sadmin:print(args)
+            sadmin.framework:Execute(ply, to, command, args)
+        end
     end)
 end
 if CLIENT then
@@ -197,9 +216,9 @@ if CLIENT then
     end)
 
     net.Receive(sadmin.nets.update_ranks, function()
-        local commands = net.ReadTable()
-        sadmin:print( commands )
-        sadmin.ranks = commands
+        local ranks = net.ReadTable()
+        sadmin:print( ranks )
+        sadmin.ranks = ranks
     end)
 
 end
