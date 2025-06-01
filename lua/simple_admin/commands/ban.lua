@@ -11,5 +11,6 @@ sadmin.framework:CreateCommand(
         local time = args["time"]
 
         ply:Ban(time/60, true)
+        return true
     end
 )

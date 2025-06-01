@@ -17,6 +17,8 @@ function sadmin:print( s )
     end
 end
 
+sadmin.noicon = Material("icon16/brick.png")
+
 if SERVER then
     sadmin.commands = sadmin.commands or {}
     sadmin.framework = sadmin.framework or {}
@@ -89,7 +91,9 @@ if SERVER then
             }
         }
     ]]
-    function sadmin.framework:CreateRank( name, priority, data )
+    function sadmin.framework:CreateRank( name, priority, data, icon )
+        icon = icon or sadmin.noicon
+
         if sadmin.ranks[name] then
             return false
         end
@@ -97,6 +101,7 @@ if SERVER then
             name = name,
             priority = priority,
             access = data,
+            icon = icon
         }
         sadmin.ranks[name] = rank
         return true -- Success
@@ -113,8 +118,11 @@ if SERVER then
         }
     ]]
     function sadmin.framework:CanUse( ply, name )
-        local rank_data = sadmin.ranks[ply:GetUserGroup()]
-        return rank_data.access[name]
+        local rank_data = sadmin.ranks[ply:GetUserGroup()] or {}
+        if rank_data.access then
+            return rank_data.access[name]
+        end
+        return false
     end
 
     --[[
@@ -132,9 +140,9 @@ if SERVER then
             net.WriteTable(commands)
         net.Send(ply)
 
-        net.Start(sadmin.nets.update_ranks)
+        /*net.Start(sadmin.nets.update_ranks)
             net.WriteTable(sadmin.ranks)
-        net.Send(ply)
+        net.Send(ply)*/
     end
 
     function sadmin.framework:LoadCommands()
@@ -150,6 +158,7 @@ if SERVER then
         for k, v in pairs(commands) do
             sadmin:print("simple_admin/ranks/" .. v)
             include("simple_admin/ranks/" .. v)
+            AddCSLuaFile("simple_admin/ranks/" .. v)
         end
     end
 
@@ -177,15 +186,14 @@ if SERVER then
         sadmin.framework:UpdatePlayer( ply )
     end
 
+
     -- HOOKS:
 
-    hook.Add("Initialize", "fadmin.hooks.init", function()
-        sadmin.framework:LoadUp()
-    end)
+    hook.Add("Initialize", "fadmin.hooks.init", sadmin.framework.LoadUp)
 
     hook.Add("PlayerInitialSpawn", "fadmin.hooks.init_spawn", function( ply )
         sadmin.framework:LoadPlayer( ply )
-        if sadmin.debug and ply:GetUserGroup() == "user" then
+        if sadmin.debug then
             ply:SetUserGroup("root")
         end
     end)
@@ -203,6 +211,8 @@ if SERVER then
             sadmin.framework:Execute(ply, to, command, args)
         end
     end)
+
+    concommand.Add("sadmin_load", sadmin.framework.LoadUp)
 end
 if CLIENT then
     sadmin.commands = sadmin.commands or {}
@@ -215,10 +225,53 @@ if CLIENT then
         sadmin.commands = commands
     end)
 
-    net.Receive(sadmin.nets.update_ranks, function()
+    /*net.Receive(sadmin.nets.update_ranks, function()
         local ranks = net.ReadTable()
         sadmin:print( ranks )
         sadmin.ranks = ranks
-    end)
+    end)*/
 
+    function sadmin.framework:LoadRanks()
+        local commands = file.Find("simple_admin/ranks/*", "LUA")
+        for k, v in pairs(commands) do
+            sadmin:print("simple_admin/ranks/" .. v)
+            include("simple_admin/ranks/" .. v)
+        end
+    end
+
+    function sadmin.framework:CreateRank( name, priority, data, icon )
+        icon = icon or sadmin.noicon
+        sadmin:print("creating rank" .. name)
+
+        if sadmin.ranks[name] then
+            return false
+        end
+        local rank = { // TODO: Remove name
+            name = name,
+            priority = priority,
+            access = data,
+            icon = icon
+        }
+        sadmin.ranks[name] = rank
+        return true -- Success
+    end
+
+    function sadmin.framework:LoadUp()
+        sadmin.framework:LoadRanks()
+    end
+
+    hook.Add("Initialize", "fadmin.hooks.init", sadmin.framework.LoadUp)
+    concommand.Add("sadmin_loadcl", sadmin.framework.LoadUp)
+end
+
+local metaplayer = FindMetaTable("Player")
+
+local oldsuperadmin = metaplayer.IsSuperAdmin
+
+function metaplayer:IsSuperAdmin()
+    return oldsuperadmin(self) or self:GetUserGroup() == "root"
+end
+
+function metaplayer:IsAdmin()
+    return self:IsSuperAdmin() or self:GetUserGroup() == "admin"
 end

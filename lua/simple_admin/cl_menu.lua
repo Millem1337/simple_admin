@@ -1,18 +1,19 @@
-function sadmin:CallMenu()
+function sadmin:CallMenu( noframe )
     local sel_player
     local sel_command
     local s_args = {}
+    local frame
 
-    local frame = vgui.Create("DFrame")
-    frame:SetTitle("Simple Admin")
-    frame:SetSize(600,500)
-    frame:Center()
-    frame:MakePopup()
-    frame:SetSizable( true )
-
-    local execute = vgui.Create("DButton", frame)
-    execute:Dock(BOTTOM)
-    execute:SetText("Execute")
+    if not noframe then
+        frame = vgui.Create("DFrame")
+        frame:SetTitle("Simple Admin")
+        frame:SetSize(600,500)
+        frame:Center()
+        frame:MakePopup()
+        frame:SetSizable( true )
+    else
+        frame = vgui.Create("DPanel")
+    end
 
     local players = vgui.Create("DScrollPanel", frame)
     players:Dock(LEFT)
@@ -49,6 +50,24 @@ function sadmin:CallMenu()
             entry:Dock(TOP)
             entry.key = k
         end
+
+        local execute = vgui.Create("DButton", args)
+        execute:Dock(TOP)
+        execute:SetText("Execute")
+        function execute:DoClick()
+            for i, v in ipairs(args:GetCanvas():GetChildren()) do
+                if not v.key then continue end 
+                sadmin:print(v.key .. " " .. v:GetValue())
+                s_args[v.key] = v:GetValue()
+            end
+    
+    
+            net.Start(sadmin.nets.execute)
+                net.WriteEntity(sel_player)
+                net.WriteString(sel_command)
+                net.WriteTable(s_args)
+            net.SendToServer()
+        end
     end
 
     local function populate_commands()
@@ -59,7 +78,7 @@ function sadmin:CallMenu()
         end
 
         local view_commands = {}
-        if sadmin.ranks[sel_player:GetUserGroup()].priority <= sadmin.ranks[LocalPlayer():GetUserGroup()].priority then
+        if sadmin.ranks[sel_player:GetUserGroup()] and sadmin.ranks[LocalPlayer():GetUserGroup()] and sadmin.ranks[sel_player:GetUserGroup()].priority <= sadmin.ranks[LocalPlayer():GetUserGroup()].priority then
             for k, v in pairs(sadmin.ranks[LocalPlayer():GetUserGroup()].access or {}) do
                 view_commands[k] = v
             end
@@ -86,29 +105,22 @@ function sadmin:CallMenu()
         end
     end
 
-    for i, v in ipairs(player.GetAll()) do
-        local ply = players:Add("DButton")
-        ply:Dock(TOP)
-        ply:SetText(v:Name())
+    for i, v in player.Iterator() do
+        if v:GetCharacter() then
+            local ply = players:Add("DButton")
+            ply:Dock(TOP)
+            ply:SetText(v:Name() .. " [" .. (v:GetCharacter().id or -1) .. "]")
+            ply:SetMaterial(sadmin.ranks[v:GetUserGroup()].icon or sadmin.noicon)
 
-        function ply:DoClick()
-            sel_player = v
-            populate_commands()
+            function ply:DoClick()
+                sel_player = v
+                populate_commands()
+            end
         end
     end
 
-    function execute:DoClick()
-        for i, v in ipairs(args:GetCanvas():GetChildren()) do
-            sadmin:print(v.key .. " " .. v:GetValue())
-            s_args[v.key] = v:GetValue()            
-        end
-
-
-        net.Start(sadmin.nets.execute)
-            net.WriteEntity(sel_player)
-            net.WriteString(sel_command)
-            net.WriteTable(s_args)
-        net.SendToServer()
+    if noframe then
+        return frame
     end
 end
 
