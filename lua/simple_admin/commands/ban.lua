@@ -7,10 +7,10 @@ sadmin.framework:CreateCommand(
             time = "Time in seconds",
         }
     },
-    function( sender, ply, args )
+    function( sender, target, args )
         local time = args["time"]
 
-        ply:Ban(time/60, true)
+        target:Ban(time/60, true)
         return true
     end
 )

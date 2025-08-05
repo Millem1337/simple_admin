@@ -20,6 +20,12 @@ function sadmin:CallMenu( noframe )
     players:DockPadding(5,5,5,5)
     players:SetWide(150)
 
+    local plr_char = vgui.Create("DPanel", frame)
+    plr_char:Dock(LEFT)
+    plr_char:DockPadding(5,5,5,5)
+    plr_char:DockMargin(5,0,0,0)
+    plr_char:SetWide(200)
+
     local commands = vgui.Create("DScrollPanel", frame)
     commands:Dock(LEFT)
     commands:DockPadding(5,5,5,5)
@@ -79,13 +85,14 @@ function sadmin:CallMenu( noframe )
 
         local view_commands = {}
         if sadmin.ranks[sel_player:GetUserGroup()] and sadmin.ranks[LocalPlayer():GetUserGroup()] and sadmin.ranks[sel_player:GetUserGroup()].priority <= sadmin.ranks[LocalPlayer():GetUserGroup()].priority then
+            sadmin:print(sadmin.ranks[LocalPlayer():GetUserGroup()].access)
             for k, v in pairs(sadmin.ranks[LocalPlayer():GetUserGroup()].access or {}) do
                 view_commands[k] = v
             end
         end
 
         for k, v in pairs(sadmin.commands) do
-            if not v.priority then
+            if not v.priority and view_commands[k] then
                 view_commands[k] = v
             end
         end
@@ -105,6 +112,25 @@ function sadmin:CallMenu( noframe )
         end
     end
 
+    local function populate_character()
+        plr_char:Clear()
+
+        local modelBox = vgui.Create("DModelPanel", plr_char)
+        modelBox:Dock(FILL)
+        modelBox:SetCamPos(Vector(70,0,45))
+        modelBox:SetFOV(40)
+        modelBox:SetLookAt(Vector(0,0,35))
+        modelBox.LayoutEntity = function() end
+        modelBox:SetModel(sel_player:GetModel())
+
+        function modelBox:PostDrawModel( ply )
+            if not IsValid(ply) then return end
+
+            rp:EqPostPlayerDraw(ply, sel_player:GetEquipment())
+        end
+        populate_commands()
+    end
+
     for i, v in player.Iterator() do
         if v:GetCharacter() then
             local ply = players:Add("DButton")
@@ -114,7 +140,7 @@ function sadmin:CallMenu( noframe )
 
             function ply:DoClick()
                 sel_player = v
-                populate_commands()
+                populate_character()
             end
         end
     end

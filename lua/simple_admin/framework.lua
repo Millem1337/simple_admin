@@ -10,7 +10,7 @@ sadmin.nets = {
 function sadmin:print( s )
     if not sadmin.debug then return false end
     if type(s) ~= "table" then
-        print( "SADMIN DEBUG: " .. s )
+        print( "SADMIN DEBUG: " .. tostring(s) )
     else
         print( "SADMIN DEBUG TABLE: " )
         PrintTable( s )
@@ -58,7 +58,7 @@ if SERVER then
 
     function sadmin.framework:Notify( ply, s )
         net.Start(sadmin.nets.notify)
-            net.WriteString( s )
+            net.WriteString( tostring(s) )
         net.Send( ply )
     end
 
@@ -241,7 +241,7 @@ if CLIENT then
 
     function sadmin.framework:CreateRank( name, priority, data, icon )
         icon = icon or sadmin.noicon
-        sadmin:print("creating rank" .. name)
+        sadmin:print("creating rank " .. name)
 
         if sadmin.ranks[name] then
             return false
@@ -262,6 +262,10 @@ if CLIENT then
 
     hook.Add("Initialize", "fadmin.hooks.init", sadmin.framework.LoadUp)
     concommand.Add("sadmin_loadcl", sadmin.framework.LoadUp)
+
+    net.Receive(sadmin.nets.notify,function()
+        notification.AddLegacy(net.ReadString(), NOTIFY_GENERIC, 5)
+    end)
 end
 
 local metaplayer = FindMetaTable("Player")
