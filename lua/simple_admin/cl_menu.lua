@@ -51,10 +51,20 @@ function sadmin:CallMenu( noframe )
     
         for k, v in pairs(sadmin.commands[sel_command].data.args) do
             sadmin:print(v)
-            local entry = args:Add("DTextEntry")
-            entry:SetPlaceholderText(v)
-            entry:Dock(TOP)
-            entry.key = k
+            if v and v.type == "text" then
+                local entry = args:Add("DTextEntry")
+                entry:SetPlaceholderText(v.placeholder)
+                entry:Dock(TOP)
+                entry.key = k
+            elseif v and v.type == "select" then
+                local entry = args:Add("DComboBox")
+                entry:SetValue(v.placeholder)
+                entry:Dock(TOP)
+                for _, arg_val in pairs(v.select) do
+                    entry:AddChoice(arg_val)
+                end
+                entry.key = k
+            end
         end
 
         local execute = vgui.Create("DButton", args)

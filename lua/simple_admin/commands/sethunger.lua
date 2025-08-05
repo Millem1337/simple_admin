@@ -4,7 +4,10 @@ sadmin.framework:CreateCommand(
         desc = "Set hunger to character",
         priority = true,
         args = {
-            hunger = "Hunger",
+            hunger = {
+                placeholder = "hunger",
+                type = "text"
+            },
         }
     },
     function( sender, target, args )

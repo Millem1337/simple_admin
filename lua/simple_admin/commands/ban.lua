@@ -4,7 +4,10 @@ sadmin.framework:CreateCommand(
         desc = "Blocks the player from entering the server for a time.",
         priority = true,
         args = {
-            time = "Time in seconds",
+            time = {
+                placeholder = "Time in seconds",
+                type = "text"
+            },
         }
     },
     function( sender, target, args )

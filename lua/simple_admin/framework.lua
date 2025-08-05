@@ -31,17 +31,20 @@ if SERVER then
             desc: "Description", -- string
             priority: true, -- is priority working
             args: { -- All arguments must be checked in function. First is always sender. -- table
-                ["time"] = "time",
+                ["time"] = {
+                    placeholder = "time",
+                    type = "text"
+                },
             }
         }
 
-        func: Function te command. Accepting player and table of arguments. Return string with error or nil. -- function
+        func: Function command. Accepting player and table of arguments. Return string with error or nil. -- function
     ]]
     function sadmin.framework:CreateCommand( name, data, func )
         if sadmin.commands[name] then
             return false
         end
-        local command = { // TODO: Remove name
+        local command = {
             name = name,
             data = data,
             func = func,

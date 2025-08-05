@@ -4,7 +4,10 @@ sadmin.framework:CreateCommand(
         desc = "Set money to character",
         priority = true,
         args = {
-            money = "$ Money",
+            money = {
+                placeholder = "$",
+                type = "text"
+            },
         }
     },
     function( sender, target, args )

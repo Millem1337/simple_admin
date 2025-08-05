@@ -4,7 +4,11 @@ sadmin.framework:CreateCommand(
         desc = "Set group to user",
         priority = true,
         args = {
-            group = "Group",
+            group = {
+                placeholder = "Group",
+                type = "select",
+                select = table.GetKeys(sadmin.ranks)
+            },
         }
     },
     function( sender, target, args )
