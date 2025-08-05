@@ -128,6 +128,17 @@ function sadmin:CallMenu( noframe )
 
             rp:EqPostPlayerDraw(ply, sel_player:GetEquipment())
         end
+
+        local jobOnModel = vgui.Create("DLabel", modelBox)
+        jobOnModel:SetTextColor(color_black)
+        jobOnModel:SetText(jobs[tonumber(sel_player:GetCharacter():GetJob())].name)
+        jobOnModel:Dock(TOP)
+
+        local moneyOnModel = vgui.Create("DLabel", modelBox)
+        moneyOnModel:SetTextColor(color_black)
+        moneyOnModel:SetText(sel_player:GetCharacter():GetMoney() .. " $")
+        moneyOnModel:Dock(TOP)
+    
         populate_commands()
     end
 
