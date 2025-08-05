@@ -1,4 +1,4 @@
-sadmin.framework:CreateRank("root", 99,{
+sadmin.framework:CreateRank("root", 100,{
     ban = true,
     unarrest = true,
     goto = true,
@@ -12,4 +12,5 @@ sadmin.framework:CreateRank("root", 99,{
     kill = true,
     spawn = true,
     freeze = true,
+    setjob = true,
 }, Material("icon16/tux.png"))
