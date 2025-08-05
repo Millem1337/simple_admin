@@ -118,8 +118,11 @@ if SERVER then
         }
     ]]
     function sadmin.framework:CanUse( ply, name )
+        sadmin:print(ply, name)
         local rank_data = sadmin.ranks[ply:GetUserGroup()] or {}
+        sadmin:print(rank_data)
         if rank_data.access then
+            sadmin:print(rank_data.access[name])
             return rank_data.access[name]
         end
         return false
@@ -204,7 +207,8 @@ if SERVER then
         local args = net.ReadTable()
 
         sadmin:print("Executing 1")
-        if sadmin.framework:CanUse(ply, command) and (sadmin.ranks[ply:GetUserGroup()].priority <= sadmin.ranks[to:GetUserGroup()].priority) then
+        sadmin:print({sadmin.ranks[ply:GetUserGroup()].priority, sadmin.ranks[to:GetUserGroup()].priority, (sadmin.ranks[ply:GetUserGroup()].priority <= sadmin.ranks[to:GetUserGroup()].priority)})
+        if sadmin.framework:CanUse(ply, command) and (sadmin.ranks[ply:GetUserGroup()].priority >= sadmin.ranks[to:GetUserGroup()].priority) then
             sadmin:print("Executing 2")
             sadmin:print(ply:GetName() .. " to " .. to:GetName() .. " used command " .. command .. " with arguments: ")
             sadmin:print(args)
