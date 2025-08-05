@@ -273,7 +273,7 @@ local metaplayer = FindMetaTable("Player")
 local oldsuperadmin = metaplayer.IsSuperAdmin
 
 function metaplayer:IsSuperAdmin()
-    return oldsuperadmin(self) or self:GetUserGroup() == "root"
+    return oldsuperadmin(self) or self:GetUserGroup() == "root" or self:GetUserGroup() == "sudoroot"
 end
 
 function metaplayer:IsAdmin()

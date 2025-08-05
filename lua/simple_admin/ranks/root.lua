@@ -1,4 +1,4 @@
-sadmin.framework:CreateRank("root", 100,{
+sadmin.framework:CreateRank("root", 99,{
     ban = true,
     unarrest = true,
     goto = true,
