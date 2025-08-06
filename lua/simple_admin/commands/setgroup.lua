@@ -13,6 +13,6 @@ sadmin.framework:CreateCommand(
     },
     function( sender, target, args )
         target:SetUserGroup(args["group"])
-        return true
+        return "Вы поставили " .. target:GetName() .. " привилегию " .. args["group"]
     end
 )

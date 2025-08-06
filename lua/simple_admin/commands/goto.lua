@@ -8,6 +8,6 @@ sadmin.framework:CreateCommand(
     },
     function( sender, target, args )
         sender:SetPos(target:GetPos())
-        return true
+        return "Вы телепортировались " .. target:GetName()
     end
 )

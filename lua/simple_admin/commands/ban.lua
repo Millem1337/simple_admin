@@ -14,6 +14,6 @@ sadmin.framework:CreateCommand(
         local time = args["time"]
 
         target:Ban(time/60, true)
-        return true
+        return "Вы забанили игрока " .. target:GetName() .. " на " .. args["time"] .. "сек."
     end
 )

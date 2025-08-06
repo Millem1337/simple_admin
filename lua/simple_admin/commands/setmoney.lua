@@ -14,6 +14,6 @@ sadmin.framework:CreateCommand(
         local money = args["money"]
 
         target:GetCharacter():SetMoney(money)
-        return true
+        return "Вы поставили " .. target:GetName() .. " " .. args["money"] .. "$"
     end
 )
