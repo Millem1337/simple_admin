@@ -8,6 +8,6 @@ sadmin.framework:CreateCommand(
     },
     function( sender, target, args )
         target:Kill()
-        return true
+        return "Вы убили " .. target:GetName()
     end
 )

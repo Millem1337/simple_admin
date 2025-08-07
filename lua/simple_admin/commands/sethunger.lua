@@ -14,6 +14,6 @@ sadmin.framework:CreateCommand(
         local hunger = args["hunger"]
 
         target:GetCharacter():SetHunger(hunger)
-        return true
+        return "Вы поставили " .. target:GetName() .. " " .. args["hunger"] .. " единиц голода"
     end
 )

@@ -8,6 +8,6 @@ sadmin.framework:CreateCommand(
     },
     function( sender, target, args )
         target:Spawn()
-        return true
+        return "Вы телепортировали " .. target:GetName() .. " на спавн"
     end
 )

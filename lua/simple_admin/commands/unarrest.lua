@@ -8,6 +8,6 @@ sadmin.framework:CreateCommand(
     },
     function( sender, target, args )
         target:UnArrest()
-        return true
+        return "Вы сняли арест игроку " .. target:GetName()
     end
 )

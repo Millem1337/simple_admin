@@ -23,6 +23,6 @@ sadmin.framework:CreateCommand(
         if job then
             target:GetCharacter():ChangeJob(tonumber(job), true)
         end
-        return true
+        return "Вы поставили игроку " .. target:GetName() .. " профессию " .. args["job"]
     end
 )
