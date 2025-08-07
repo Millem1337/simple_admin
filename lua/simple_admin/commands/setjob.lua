@@ -1,6 +1,6 @@
 local select_jobs = {}
 hook.Add("InitPostEntity", "sadmin.selectojobs", function()
-    for k, v in pairs(jobs) do
+    for k, v in pairs(rp.jobs) do
         select_jobs[k] = v.name
     end
 end)

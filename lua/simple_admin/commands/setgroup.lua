@@ -12,7 +12,16 @@ sadmin.framework:CreateCommand(
         }
     },
     function( sender, target, args )
-        target:SetUserGroup(args["group"])
+        local ug = args["group"]
+        if not sadmin.ranks[ug] then
+            return "group doesn't exist"
+        end
+
+        if sadmin.ranks[ug].priority > sadmin.ranks[sender:GetUserGroup()].priority then
+            return "group priority is higher then yours"
+        end
+
+        target:SetUserGroup(ug)
         return true
     end
 )
