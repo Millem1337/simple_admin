@@ -13,4 +13,5 @@ sadmin.framework:CreateRank("root", 100,{
     spawn = true,
     freeze = true,
     setjob = true,
+    additem = true,
 }, Material("icon16/tux.png"))
