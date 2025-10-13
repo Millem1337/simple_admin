@@ -23,6 +23,9 @@ if SERVER then
     sadmin.commands = sadmin.commands or {}
     sadmin.framework = sadmin.framework or {}
     sadmin.ranks = sadmin.ranks or {}
+
+    sql.Query("create table if not exists sadmin_ranks (steamid64 bigint not null, rank varchar(30), primary key (steamid64))")
+
     --[[
         CreateCommand( name, data, func ) - Creating command :). Returns false if command already exists!
         name: Name of the command (eg. ban) -- string
@@ -175,8 +178,26 @@ if SERVER then
         end
     end
 
-    function sadmin.framework:LoadDatabase()
+    function sadmin.framework:LoadDatabase( ply )
         // TODO: Create loading database.
+        local steamid64 = ply:SteamID64()
+        local result = sql.QueryRow(string.format("select rank from sadmin_ranks where steamid64=%s", steamid64))
+        PrintTable(result or {})
+        if result.rank then
+            local rank = result.rank
+            ply:SetUserGroup(rank)
+        end
+    end
+
+    function sadmin.framework:SaveDatabase( ply )
+        local steamid64 = ply:SteamID64()
+        local rank = ply:GetUserGroup()
+        local s = string.format("insert into sadmin_ranks (steamid64, rank) values (%s,'%s') ON CONFLICT(steamid64) DO UPDATE SET rank = '%s'", steamid64, rank, rank)
+        print(s)
+        
+        local result = sql.Query(s)
+
+        PrintTable(result or {})
     end
 
     function sadmin.framework:LoadUp()
@@ -187,7 +208,7 @@ if SERVER then
 
     function sadmin.framework:LoadPlayer( ply )
         -- Get rank from database
-        sadmin.framework:LoadDatabase()
+        sadmin.framework:LoadDatabase( ply )
         -- UpdatePlayer
         sadmin.framework:UpdatePlayer( ply )
     end
@@ -195,13 +216,17 @@ if SERVER then
 
     -- HOOKS:
 
-    hook.Add("Initialize", "fadmin.hooks.init", sadmin.framework.LoadUp)
+    hook.Add("Initialize", "sadmin.hooks.init", sadmin.framework.LoadUp)
 
-    hook.Add("PlayerInitialSpawn", "fadmin.hooks.init_spawn", function( ply )
+    hook.Add("PlayerInitialSpawn", "sadmin.hooks.init_spawn", function( ply )
         sadmin.framework:LoadPlayer( ply )
         if sadmin.debug then
             ply:SetUserGroup("root")
         end
+    end)
+
+    hook.Add("PlayerDisconnected", "sadmin.hooks.save_disconnect", function(ply)
+        sadmin.framework:SaveDatabase( ply )
     end)
 
     net.Receive(sadmin.nets.execute, function( _, ply )
@@ -267,7 +292,7 @@ if CLIENT then
         sadmin.framework:LoadRanks()
     end
 
-    hook.Add("Initialize", "fadmin.hooks.init", sadmin.framework.LoadUp)
+    hook.Add("Initialize", "sadmin.hooks.init", sadmin.framework.LoadUp)
     concommand.Add("sadmin_loadcl", sadmin.framework.LoadUp)
 
     net.Receive(sadmin.nets.notify,function()

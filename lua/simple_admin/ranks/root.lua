@@ -15,4 +15,5 @@ sadmin.framework:CreateRank("root", 100,{
     setjob = true,
     additem = true,
     cloak = true,
+    savedata = true,
 }, Material("icon16/tux.png"))

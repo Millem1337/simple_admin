@@ -14,4 +14,5 @@ sadmin.framework:CreateRank("sudoroot", 99,{
     freeze = true,
     setjob = true,
     cloak = true,
+    savedata = true,
 }, Material("icon16/tux.png"))
