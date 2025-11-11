@@ -1,5 +1,5 @@
 sadmin = sadmin or {}
-sadmin.debug = true
+sadmin.debug = false
 sadmin.nets = {
     update_commands = "sadmin.nets.update.commands", -- Update all the commands
     update_ranks = "sadmin.nets.update.ranks", -- Update all the ranks

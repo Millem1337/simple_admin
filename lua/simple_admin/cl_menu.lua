@@ -5,14 +5,14 @@ function sadmin:CallMenu( noframe )
     local frame
 
     if not noframe then
-        frame = vgui.Create("DFrame")
+        frame = vgui.Create("rp.frame")
         frame:SetTitle("Simple Admin")
         frame:SetSize(600,500)
         frame:Center()
         frame:MakePopup()
         frame:SetSizable( true )
     else
-        frame = vgui.Create("DPanel")
+        frame = vgui.Create("rp.panel")
     end
 
     local players = vgui.Create("DScrollPanel", frame)
@@ -20,7 +20,7 @@ function sadmin:CallMenu( noframe )
     players:DockPadding(5,5,5,5)
     players:SetWide(150)
 
-    local plr_char = vgui.Create("DPanel", frame)
+    local plr_char = vgui.Create("rp.panel", frame)
     plr_char:Dock(LEFT)
     plr_char:DockPadding(5,5,5,5)
     plr_char:DockMargin(5,0,0,0)
@@ -67,7 +67,7 @@ function sadmin:CallMenu( noframe )
             end
         end
 
-        local execute = vgui.Create("DButton", args)
+        local execute = vgui.Create("rp.button", args)
         execute:Dock(TOP)
         execute:SetText("Execute")
         function execute:DoClick()
@@ -111,7 +111,7 @@ function sadmin:CallMenu( noframe )
             local command_data = sadmin.commands[k]
             sadmin:print(command_data)
     
-            local command = commands:Add("DButton")
+            local command = commands:Add("rp.button")
             command:Dock(TOP)
             command:SetText(command_data.name)
     
@@ -154,7 +154,7 @@ function sadmin:CallMenu( noframe )
 
     for i, v in player.Iterator() do
         if v:GetCharacter() then
-            local ply = players:Add("DButton")
+            local ply = players:Add("rp.button")
             ply:Dock(TOP)
             ply:SetText(v:Name() .. " [" .. (v:GetCharacter().id or -1) .. "]")
             ply:SetMaterial(sadmin.ranks[v:GetUserGroup()].icon or sadmin.noicon)
