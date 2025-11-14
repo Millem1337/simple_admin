@@ -156,7 +156,7 @@ function sadmin:CallMenu( noframe )
         if v:GetCharacter() then
             local ply = players:Add("rp.button")
             ply:Dock(TOP)
-            ply:SetText(v:Name() .. " [" .. (v:GetCharacter().id or -1) .. "]")
+            ply:SetText(v:Name() .. " [" .. (v:GetCharacter():GetUID() or -1) .. "]")
             ply:SetMaterial(sadmin.ranks[v:GetUserGroup()].icon or sadmin.noicon)
 
             function ply:DoClick()
