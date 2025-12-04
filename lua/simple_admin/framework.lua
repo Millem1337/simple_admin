@@ -181,9 +181,9 @@ if SERVER then
     function sadmin.framework:LoadDatabase( ply )
         // TODO: Create loading database.
         local steamid64 = ply:SteamID64()
-        local result = sql.QueryRow(string.format("select rank from sadmin_ranks where steamid64=%s", steamid64))
+        local result = sql.QueryRow(string.format("select rank from sadmin_ranks where steamid64=%s", tostring(steamid64)))
         PrintTable(result or {})
-        if result.rank then
+        if result and result.rank then
             local rank = result.rank
             ply:SetUserGroup(rank)
         end
@@ -192,7 +192,7 @@ if SERVER then
     function sadmin.framework:SaveDatabase( ply )
         local steamid64 = ply:SteamID64()
         local rank = ply:GetUserGroup()
-        local s = string.format("insert into sadmin_ranks (steamid64, rank) values (%s,'%s') ON CONFLICT(steamid64) DO UPDATE SET rank = '%s'", steamid64, rank, rank)
+        local s = string.format("insert into sadmin_ranks (steamid64, rank) values (%s,'%s') ON CONFLICT(steamid64) DO UPDATE SET rank = '%s'", tostring(steamid64), rank, rank)
         print(s)
         
         local result = sql.Query(s)
