@@ -182,7 +182,7 @@ if SERVER then
         // TODO: Create loading database.
         local steamid64 = ply:SteamID64()
         local result = sql.QueryRow(string.format("select rank from sadmin_ranks where steamid64=%s", tostring(steamid64)))
-        PrintTable(result or {})
+        sadmin:print(result or {})
         if result and result.rank then
             local rank = result.rank
             ply:SetUserGroup(rank)
@@ -197,7 +197,7 @@ if SERVER then
         
         local result = sql.Query(s)
 
-        PrintTable(result or {})
+        sadmin:print(result or {})
     end
 
     function sadmin.framework:LoadUp()
