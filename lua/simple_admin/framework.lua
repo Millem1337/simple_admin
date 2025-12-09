@@ -139,7 +139,6 @@ if SERVER then
         ply: Player -- player
     ]]
     function sadmin.framework:UpdatePlayer( ply )
-        // TODO: Remove function before sending to the client
         local commands = table.Copy(sadmin.commands)
         for k, v in pairs(commands) do 
             v.func = nil
