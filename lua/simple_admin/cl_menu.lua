@@ -140,12 +140,12 @@ function sadmin:CallMenu( noframe )
         end
 
         local jobOnModel = vgui.Create("DLabel", modelBox)
-        jobOnModel:SetTextColor(color_black)
+        jobOnModel:SetTextColor(color_white)
         jobOnModel:SetText(rp.jobs[tonumber(sel_player:GetCharacter():GetJob())].name)
         jobOnModel:Dock(TOP)
 
         local moneyOnModel = vgui.Create("DLabel", modelBox)
-        moneyOnModel:SetTextColor(color_black)
+        moneyOnModel:SetTextColor(color_white)
         moneyOnModel:SetText(sel_player:GetCharacter():GetMoney() .. " $")
         moneyOnModel:Dock(TOP)
     
